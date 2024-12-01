@@ -1,0 +1,26 @@
+{
+  "name": "Charlotte",
+  "version": "1.0.0",
+  "description": "Simple C.ai bot",
+  "scripts": {
+    "start": "node handler.js"
+  },
+  "keywords": [
+   "Charlotte"
+  ],
+  "author": "Xyro",
+  "license": "",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.8",
+    "axios": "^1.7.7",
+    "gemini-ai": "^2.2.1",
+    "groq-sdk": "^0.7.0",
+    "moment-timezone": "^0.5.45",
+    "nodemon": "^3.1.7",
+    "os": "^0.1.2",
+    "readline": "^1.3.0"
+  },
+  "devDependencies": {
+    "qrcode-terminal": "^0.12.0"
+  }
+}
