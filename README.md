@@ -1,4 +1,4 @@
-## ** EARLY ACCESS **
+## **EARLY ACCESS**
 - Do not share this code with anyone.
 - Only contributors can override
 
