@@ -1,3 +1,7 @@
+## ** EARLY ACCESS **
+- Do not share this code with anyone.
+- Only contributors can override
+
 # **Charlotte Here!**  
 ![Charlotte Image](https://storage.netorare.codes/f/826860570.jpg)  
 
