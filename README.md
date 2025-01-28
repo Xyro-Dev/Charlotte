@@ -26,6 +26,12 @@ Script ini adalah **autoAI chatbot WhatsApp** yang menggunakan **Character.AI AP
 ## **Sankyu for Using This Script!**  
 Jangan lupa kasih bintang ⭐ di repository ini!  
 
+Dan terimakasih Untuk:
+- suryasultanbali
+- faiskarbitmaou
+- dimasketiban45layer
+- renodispamfemboy
+
 ![Sankyu Image](https://storage.netorare.codes/f/2a2077568b8075a2c8fd4e8161b52382.jpg)
 
 **Regards, Xyro~**
