@@ -1,9 +1,9 @@
-## **EARLY ACCESS**
-- Do not share this code with anyone.
-- Only contributors can override
+## **IMPORTANT!!!**
+• This script will be broken if 
+  - You use it in groups ( For Now Didn't Support In Group)
 
 # **Charlotte Here!**  
-![Charlotte Image](https://storage.netorare.codes/f/826860570.jpg)  
+![Charlotte Image](https://storage.netorare.codes/f/32517e8a51374e35281d4a80205888c7.jpg)  
 
 ## **Penjelasan**  
 Script ini sangat simpel! Kamu hanya perlu:  
