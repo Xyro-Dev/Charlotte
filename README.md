@@ -45,6 +45,7 @@ npm start
 # atau
 node handler.js
 
+```
 selamat mencoba
 ![Good luck](https://qu.ax/DXysd.jpg)
 
