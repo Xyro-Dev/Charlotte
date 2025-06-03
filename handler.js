@@ -10,17 +10,35 @@ const {
   Browsers,
   jidNormalizedUser,
   makeInMemoryStore,
-  PHONENUMBER_MCC,
+  fetchLatestBaileysVersion
 } = require("@whiskeysockets/baileys");
 const pino = require("pino");
 const fs = require("fs");
 const NodeCache = require("node-cache");
 const Groq = require("groq-sdk");
 const { ai } = require('./lib/func.js')
+const crypto = require("crypto")
+const { exec } = require("child_process");
+const { createRequire } = require("module");
+const { fileURLToPath } = require("url");
+const util = require("util")
+
+const PHONENUMBER_MCC = {
+  "62": "ID",
+  "60": "MY",
+  "91": "IN",
+  "1": "US",
+  "55": "BR",
+  "81": "JP",
+  "82": "KR",
+  "84": "VN",
+  "66": "TH",
+  "234": "NG",
+};
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // ============= Authorization ============= \\
 
-const BOT_NUMBER = "6287782297286";
+const BOT_NUMBER = "6287866844074";
 const OWNER_NUMBER = "6285931969956"
 
 // =============------**------============ \\
@@ -42,7 +60,7 @@ const groq = new Groq({
 const logger = pino({
   timestamp: () => `,"time":"${new Date().toJSON()}"`,
 }).child({ class: "Xyro" });
-logger.level = "fatal";
+logger.level = "silent";
 
 /**
  * @type {import("@whiskeysockets/baileys").MessageStore}
@@ -52,6 +70,7 @@ const store = makeInMemoryStore({ logger });
 
 async function Handler() {
   const { state, saveCreds } = await useMultiFileAuthState("session");
+  const { version } = await fetchLatestBaileysVersion()
 
   const creds_json = "session/creds.json";
   if (fs.existsSync(creds_json)) {
@@ -90,9 +109,10 @@ async function Handler() {
       logger,
       printQRInTerminal: true,
       auth: state,
-      browser: Browsers.windows("firefox"),
+      browser: ['Chrome', 'MacOS', '3.0'], 
       msgRetryCounterCache,
     });
+
 
     store.bind(Fumi.ev);
     Fumi.ev.on("creds.update", saveCreds);
@@ -130,14 +150,13 @@ async function Handler() {
   }
   const msgRetryCounterCache = new NodeCache();
   const Fumi = makeWASocket({
-    version: [2, 3000, 1015901307],
     logger,
     printQRInTerminal: process.argv.includes("qr"),
     auth: {
       creds: state.creds,
       keys: makeCacheableSignalKeyStore(state.keys, logger),
     },
-    browser: Browsers.windows("firefox"),
+    browser: ["Ubuntu", "Chrome", "20.0.04"],
     markOnlineOnConnect: true,
     generateHighQualityLinkPreview: true,
     syncFullHistory: true,
@@ -178,7 +197,7 @@ async function Handler() {
             `🔎Website: https://xyro.fund\n` +
             `🗳️DonationInfo: https://saweria.co/Ifungtech`;
 
-        await Fumi.sendMessage(`${OWNER_NUMBER}@s.whatsapp.net`, { image: { url: "https://storage.netorare.codes/f/242031827.jpg" }, caption: messageToOwner });
+        await Fumi.sendMessage(`${OWNER_NUMBER}@s.whatsapp.net`, { image: { url: "https://ifung-as.xyro.tech/images/foto.gif" }, caption: messageToOwner });
         console.log("Fumi Was Connected!!!.");
     } catch (error) {
         console.error("Something Wrong, Check Your Code Again", error);
@@ -256,13 +275,28 @@ function event_on(command, description, callback) {
     listCmdNya[command] = { description, callback };
 }
 
+
+
 Fumi.ev.on("messages.upsert", async (msg) => {
     if (msg.messages.length === 0) return;
     let m = msg.messages[0];
     let jid = m.key.remoteJid;
-    let senderNumber = m.key.participant || jid;
-    senderNumber = senderNumber.split("@")[0]; 
-    let senderName = m.pushName || "Unknown";
+    let participant = m.key.participant;
+
+     let raw = null;
+    if (participant && participant.split("@")[0].length <=    15) {
+    raw = participant.split("@")[0];
+    }
+    else if (jid && jid.split("@")[0].length <= 15) {
+    raw = jid.split("@")[0];
+    }
+    else {
+    raw = null;
+    console.log("senderNumber:", null);
+    }
+    senderNumber = raw;
+    let senderName = null
+    senderName = m.pushName || "Unknown";
     let reply = (text) => Fumi.sendMessage(jid, { text }, { quoted: m });
     if (m.key.fromMe) return;
      
@@ -273,16 +307,13 @@ Fumi.ev.on("messages.upsert", async (msg) => {
    // debuger, open the cmd when you want do debugging your code
 
     console.log("MsgCntn:", messageContent);
-    console.log("Context Info:", m.message?.extendedTextMessage?.contextInfo);
-    console.log("Tag:", m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.includes(`${BOT_NUMBER}@s.whatsapp.net`));
+    console.log("Context Info:", m.message?.extendedTextMessage?.contextInfo || "null" );
     console.log("Replying:", m.message?.extendedTextMessage?.contextInfo?.participant === `${BOT_NUMBER}@s.whatsapp.net`);
-    console.log("QuotMess:", m.message?.extendedTextMessage?.contextInfo?.quotedMess);
-    
 
     
     const proses_cmd = async (command, args) => {
         if (listCmdNya[command]) {
-            const res_after_callback = await listCmdNya[command].callback(args, reply, Fumi, jid, m, senderNumber);
+            const res_after_callback = await listCmdNya[command].callback(args, reply, Fumi, jid, m, senderNumber, senderName);
             
             
             
@@ -312,7 +343,14 @@ Fumi.ev.on("messages.upsert", async (msg) => {
                 
                 Fumi.sendPresenceUpdate("composing", jid);
                 await sleep(1000)
-                let chatAI = await ChatAI(textAfterMention || quotedMess?.conversation || "");
+                let chatAI;
+try {
+  chatAI = await ChatAI(textAfterMention || quotedMess?.conversation || "", senderNumber, senderName);
+} catch (err) {
+  console.error("ChatAI Error:", err.message);
+  reply("⚠️ Sorry, an error occurred when getting a response.");
+  return;
+}
                 reply(chatAI);
 
                 upDB(senderNumber, senderName, messageContent, chatAI);
@@ -330,7 +368,14 @@ Fumi.ev.on("messages.upsert", async (msg) => {
             
             Fumi.sendPresenceUpdate("composing", jid);
             await sleep(1000)
-            let chatAI = await ChatAI(messageContent, senderNumber);
+            let chatAI;
+try {
+  chatAI = await ChatAI(messageContent, senderNumber, senderName);
+} catch (err) {
+  console.error("ChatAI Error:", err.message);
+  reply("⚠️ Sorry, an error occurred when getting a response.");
+  return;
+}
             reply(chatAI);
 
             upDB(senderNumber, senderName, messageContent, chatAI);
@@ -342,7 +387,7 @@ Fumi.ev.on("messages.upsert", async (msg) => {
     console.log("By : " + senderNumber);
     console.log("Message : " + messageContent);
     console.log("====================================\n\n");
-});
+})
 
 // ============= Command ============= \\
 
@@ -368,27 +413,37 @@ event_on("tes", "You Absolutely Know This", (args, reply) => {
     }
 });
 */
+
+/*
 event_on("news", "Show Latest News Or Search News", async (args, reply) => {
-    let argument = args.trim();
-    if (argument) {
-        const res = await ai.berita(argument);
-        let kata = `\> Result From ${argument}\n\n`
-       res.results.forEach((y, index) => {
-         kata += `${ index + 1 }. ${ y.title }\n`;
-         kata += `\- ${ y.snippet }\n\n`;
-        })
-        reply(kata);
-    } else {
-        const res = await ai.berita("latest news");
-        let kata = `\> Here The Latest News\n\n`
-       res.results.forEach((y, index) => {
-         kata += `${ index + 1 }. ${ y.title }\n`;
-         kata += `\- ${ y.snippet }\n\n`;
-        })
-        reply(kata);
+    try {
+        const query = args.trim();
+        const searchTerm = query || "latest news";
+        const res = await ai.berita(searchTerm);
+
+        if (!res || !res.results || res.results.length === 0) {
+            return reply(`Tidak ditemukan berita untuk: *${searchTerm}*`);
+        }
+
+        let pesan = query
+            ? `> Hasil pencarian berita untuk: *${searchTerm}*\n\n`
+            : `> Berita terbaru:\n\n`;
+
+        res.results.forEach((item, index) => {
+            pesan += `${index + 1}. ${item.title}\n`;
+            pesan += `- ${item.snippet}\n\n`;
+        });
+
+        reply(pesan);
+    } catch (error) {
+        console.error("Error mengambil berita:", error);
+        reply("Terjadi kesalahan saat mengambil berita.");
     }
 });
 
+*/
+
+/*
 event_on("imagine", "Make Your Own Character", async (args, reply, Fumi, jid, m) => {
     let argument = args.trim();
     if (argument) {
@@ -422,43 +477,9 @@ event_on("waifu", "Create Your Imagination", async (args, reply, Fumi, jid, m) =
         reply("Use /imagine and type whats in your mind");
     }
 });
-/*
-const commands = {
-    "6285931969956": "pm2 restart if",
-    "6289628112108": "pm2 restart rij"
-};
-
-event_on("restart", "Restart the API based on sender number", async (args, reply, m) => {
-    let nomornya = m
-    let dor = nomornya //.split("@")[0]; 
-    console.log("Sender Number:", dor);
-    console.log(m.sender) // Debug: cek nomor pengirim di log
-    
-    if (!commands[nomornya]) {
-        return reply("Unauthorized");
-    }
-
-    const exec = require("child_process").exec;
-    exec(commands[senderNumber], (error, stdout, stderr) => {
-        if (error) {
-            reply(`Error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            reply(`Stderr: ${stderr}`);
-            return;
-        }
-        reply(`Successfully executed! Wait for 1 or 2 minutes.`);
-    });
-    
-});
 */
-
-event_on("reset", "Reset session chat", async (args, reply, Fumi, jid, m) => {
-    const senderNumber = m.key.participant
-        ? m.key.participant.split("@")[0]
-        : m.key.remoteJid.split("@")[0];
-
+event_on("reset", "Reset session chat", async (args, reply, Fumi, jid, m, senderNumber, senderName) => {
+   
     const db = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, "utf8")) : {};
 
     if (!db[senderNumber] || !db[senderNumber].chatId) {
@@ -470,6 +491,59 @@ event_on("reset", "Reset session chat", async (args, reply, Fumi, jid, m) => {
     fs.writeFileSync(path, JSON.stringify(db, null, 2));
     reply("Session chat berhasil dihapus.");
 });
+
+
+// =======================
+// Command: /eval
+// =======================
+event_on("eval", "Evaluasi kode JavaScript", async (args, reply, Fumi, jid, m, senderNumber)=> {
+    if (senderNumber !== OWNER_NUMBER) return reply("mff kamu bukan owner...")
+    const code = args.trim();
+    if (!code) return reply("Masukkan kode JavaScript untuk dieksekusi.");
+    
+    const require = createRequire(__dirname);
+
+    let result;
+    try {
+        result = /await/i.test(code)
+            ? await eval(`(async () => { ${code} })()`)
+            : eval(code);
+    } catch (err) {
+        result = err;
+    }
+
+    try {
+    const output = typeof result === "object"
+        ? util.inspect(result, { depth: 1 })
+        : String(result);
+    reply(output);
+} catch (e) {
+    reply(`Gagal mengirim hasil:\n${String(e)}`);
+}
+
+});
+
+// =======================
+// Command: /exec
+// =======================
+event_on("exec", "Jalankan perintah shell", async (args, reply, Fumi, jid, m, senderNumber) => {
+    if (senderNumber !== OWNER_NUMBER) return reply("mff kamu bukan owner...")
+    const command = args.trim();
+    if (!command) return reply("Masukkan perintah shell untuk dieksekusi.");
+
+    exec(command, (err, stdout, stderr) => {
+        if (err) {
+            return reply(`❌ Error:\n${err.message}`);
+        }
+
+        if (stderr) {
+            return reply(`⚠️ Stderr:\n${stderr}`);
+        }
+
+        reply(`✅ Output:\n${stdout || "Perintah selesai tanpa output."}`);
+    });
+});
+
 // =============------**------============ \\
 }
 Handler();
@@ -482,12 +556,12 @@ function getServerInfo() {
     return `Server Uptime: ${hours} hours, ${minutes} minutes, and ${seconds} seconds.`;
 }
 
-// Sleep function
+// fungsi tidur / sleep
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function ChatAI(text, senderNumber) {
+async function ChatAI(text, senderNumber, senderName, userMessage, res_after_callback) {
     if (!senderNumber) {
         throw new Error("Sender number tidak ditemukan. Pastikan senderNumber dikirim dengan benar.");
     }
@@ -516,13 +590,16 @@ async function ChatAI(text, senderNumber) {
             userChatId = result.result.chat_id;
 
             db[senderNumber] = {
-                ...db[senderNumber],
-                chatId: userChatId,
-                name: db[senderNumber]?.name || "Unknown",
-                number: senderNumber,
-            };
+        ...db[senderNumber],
+        chatId: userChatId, 
+        name: senderName || "Unknown",
+        number: senderNumber,
+        lastMessage: userMessage,
+        lastResponse: res_after_callback,
+    };
 
-            fs.writeFileSync(path, JSON.stringify(db, null, 2));
+    fs.writeFileSync(path, JSON.stringify(db, null, 2));
+
             console.log(`New User: ${senderNumber}, ChatId      :`, userChatId);
         } else {
             throw new Error("Invalid Res From API.");
