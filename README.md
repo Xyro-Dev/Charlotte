@@ -2,9 +2,6 @@
 • This script will be broken if 
   - You use it in groups ( For Now Didn't Support In Group)
 
-# **Charlotte Here!**  
-![Charlotte Image](https://storage.netorare.codes/f/32517e8a51374e35281d4a80205888c7.jpg)  
-
 ## **Penjelasan**  
 • This script will be broken if  
   - You use it in groups (**[Now Fixed in Version 2.0.0]**)  
@@ -34,34 +31,6 @@ Kini hadir versi **Charlotte 2.0.0** dengan banyak perbaikan dan fitur baru:
   ( QR yang ke fix, pairing belum, ajah sendiri👅)
 
 ---
-
-## **Penjelasan**  
-Script ini adalah **autoAI chatbot WhatsApp** yang menggunakan **Character.AI API**. Dibangun sepenuhnya dengan JavaScript (**full-stuck JS**).
-
-### **Fitur Utama**  
-- **Database Chat**: Semua percakapan tersimpan dengan baik.  
-- **Light**: Optimasi terbaik untuk performa maksimal.  
-- **Mudah Dimodifikasi**:  
-  *( ati ati rekode wok💔 )*  
-- **Beberapa Example CMD**: Fleksibilitas perintah yang mudah dipahami.  
-- **Bebas Set Character**: Kamu bisa memilih karakter sesuai keinginanmu.  
-- **Support NSFW Chat**: 😏  
-
----
-
-## **Sankyu for Using This Script!**  
-Jangan lupa kasih bintang ⭐ di repository ini!  
-
-Dan terimakasih Untuk:
-- suryasultanbali
-- faiskarbitmaou
-- dimasketiban45layer
-- renodispamfemboy
-
-![Sankyu Image](https://storage.netorare.codes/f/2a2077568b8075a2c8fd4e8161b52382.jpg)
-
-**Regards, Xyro~**
-=======
 ## **Cara install Charlotte**
 Mana Cara pake nya? ini caranya🗣️
 
@@ -78,3 +47,19 @@ node handler.js
 
 selamat mencoba
 ![Good luck](https://qu.ax/DXysd.jpg)
+
+---
+
+## **Sankyu for Using This Script!**  
+Jangan lupa kasih bintang ⭐ di repository ini!  
+
+Dan terimakasih Untuk:
+- suryasultanbali
+- faiskarbitmaou
+- dimasketiban45layer
+- renodispamfemboy
+
+![Sankyu Image](https://qu.ax/DXysd.jpg)
+
+**Regards, Xyro~**
+
