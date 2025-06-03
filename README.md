@@ -24,15 +24,15 @@ Script ini adalah **autoAI chatbot WhatsApp** yang menggunakan **Character.AI AP
 Kini hadir versi **Charlotte 2.0.0** dengan banyak perbaikan dan fitur baru:
 
 ### **Update pada Charlotte 2.0.0**
-- ✅ **Perbaikan sistem chat di grup** (di versi sebelum nya error, ini dah bener)
-- ❌ **Penghapusan fitur generate image** (belum nemu referensi wen create image)
-- ➕ **Penambahan perintah `eval` dan `exec`** (yayaya pasti tau apa)
-- 🔧 ** QR Code dah bisa**  
-  ( QR yang ke fix, pairing belum, ajah sendiri👅)
+- Perbaikan sistem chat di grup (di versi sebelum nya error, ini dah bener🥳)
+- Penghapusan fitur generate image (belum nemu referensi wen create image🥀)
+- Penambahan perintah `eval` dan `exec` (yayaya pasti tau apa🙄)
+- QR Code dah bisa  
+  ( QR yang ke fix, pairing belum, ajah sendiri👅👅)
 
 ---
 ## **Cara install Charlotte**
-Mana Cara pake nya? ini caranya🗣️
+Mana Cara pake nya? ini caranya
 
 ### 1. Clone Repo Ini
 ### 2. Buka Terminal, lalu sokin:
@@ -59,7 +59,9 @@ Dan terimakasih Untuk:
 - dimasketiban45layer
 - renodispamfemboy
 
-![Sankyu Image](https://qu.ax/DXysd.jpg)
+
+![SankyuImage](https://qu.ax/boXue.jpg)
+
 
 **Regards, Xyro~**
 
