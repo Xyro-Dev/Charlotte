@@ -38,8 +38,8 @@ const PHONENUMBER_MCC = {
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // ============= Authorization ============= \\
 
-const BOT_NUMBER = "6287866844074";
-const OWNER_NUMBER = "6285931969956"
+const BOT_NUMBER = "";
+const OWNER_NUMBER = ""
 
 // =============------**------============ \\
 
