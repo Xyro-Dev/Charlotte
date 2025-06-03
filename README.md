@@ -1,6 +1,6 @@
 ## **IMPORTANT!!!**
 • This script will be broken if 
-  - You use it in groups ( For Now Didn't Support In Group)
+  
 
 ## **Penjelasan**  
 • This script will be broken if  
